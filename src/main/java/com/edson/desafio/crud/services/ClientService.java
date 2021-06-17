@@ -14,18 +14,45 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ClientService {
 
-    @Autowired
-    private ClientRepository repository;
+	@Autowired
+	private ClientRepository repository;
 
-    @Transactional(readOnly = true)
-    public Page<ClientDTO> findAll(PageRequest pageRequest) {
-        Page<Client> list = repository.findAll(pageRequest);
-        return list.map(ClientDTO::new);
-    }
+	@Transactional(readOnly = true)
+	public Page<ClientDTO> findAll(PageRequest pageRequest) {
+		Page<Client> list = repository.findAll(pageRequest);
+		return list.map(ClientDTO::new);
+	}
 
-    @Transactional(readOnly = true)
-    public ClientDTO findById(Long id) {
-        return new ClientDTO(repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Entity not found")));
-    }
+	@Transactional(readOnly = true)
+	public ClientDTO findById(Long id) {
+		return new ClientDTO(
+				repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Entity not found")));
+	}
+
+	@Transactional
+	public ClientDTO insert(ClientDTO dto) {
+		Client entity = new Client();
+		copyDtoToEntity(dto, entity);
+		repository.save(entity);
+		return new ClientDTO(entity);
+	}
+
+//	@Transactional
+//	public ClientDTO update(ClientDTO dto) {
+//		Client entity = reposi
+//		copyDtoToEntity(dto, entity);
+//		repository.save(entity);
+//		return new ClientDTO(entity);
+//	}
+//	
+
+	private void copyDtoToEntity(ClientDTO dto, Client entity) {
+		entity.setBirthDate(dto.getBirthDate());
+		entity.setChildren(dto.getChildren());
+		entity.setCpf(dto.getCpf());
+		entity.setIncome(dto.getIncome());
+		entity.setName(dto.getName());
+
+	}
 
 }
